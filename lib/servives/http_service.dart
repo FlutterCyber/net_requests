@@ -1,26 +1,32 @@
+
 import 'dart:convert';
 
 import 'package:http/http.dart';
 
+import '../model/emplist_model.dart';
+import '../model/empone_model.dart';
 import '../model/user_model.dart';
 
 class Network {
   static String BASE = "dummy.restapiexample.com";
   static Map<String, String> headers = {
-    'Content-type': 'application/json; charset=UTF-8'
+    'Content-Type': 'application/json; charset=UTF-8'
   };
 
-  // http APIs
-  static String API_GET_LIST = "/api/v1/employees";
-  static String API_GET_ONE = "/api/v1/employee/"; // id
-  static String API_CREATE = "/api/v1/create";
-  static String API_UPDATE = "/api/v1/update/"; // id
-  static String API_DELETE = "/api/v1/delete/"; // id
+  /* Http Apis */
 
-// HTTP REQUESTS
+  static String API_EMP_LIST = "/api/v1/employees";
+  static String API_EMP_ONE = "/api/v1/employee/"; //{id}
+  static String API_EMP_CREATE = "/api/v1/create";
+  static String API_EMP_UPDATE = "/api/v1/update/"; //{id}
+  static String API_EMP_DELETE = "/api/v1/delete/"; //{id}
+
+
+  /* Http Requests */
 
   static Future<String?> GET(String api, Map<String, String> params) async {
-    var uri = Uri.https(BASE, api, params);
+    print(api);
+    var uri = Uri.http(BASE, api, params);
     var response = await get(uri, headers: headers);
     if (response.statusCode == 200) {
       return response.body;
@@ -29,7 +35,8 @@ class Network {
   }
 
   static Future<String?> POST(String api, Map<String, String> params) async {
-    var uri = Uri.https(BASE, api);
+    print(api);
+    var uri = Uri.http(BASE, api);
     var response = await post(uri, headers: headers, body: jsonEncode(params));
     if (response.statusCode == 200 || response.statusCode == 201) {
       return response.body;
@@ -38,7 +45,7 @@ class Network {
   }
 
   static Future<String?> PUT(String api, Map<String, String> params) async {
-    var uri = Uri.https(BASE, api);
+    var uri = Uri.http(BASE, api);
     var response = await put(uri, headers: headers, body: jsonEncode(params));
     if (response.statusCode == 200) {
       return response.body;
@@ -46,8 +53,8 @@ class Network {
     return null;
   }
 
-  static Future<String?> DELETE(String api, Map<String, String> params) async {
-    var uri = Uri.https(BASE, api, params);
+  static Future<String?> DEL(String api, Map<String, String> params) async {
+    var uri = Uri.http(BASE, api, params);
     var response = await delete(uri, headers: headers);
     if (response.statusCode == 200) {
       return response.body;
@@ -55,7 +62,8 @@ class Network {
     return null;
   }
 
-  // Http params
+  /* Http Params */
+
   static Map<String, String> paramsEmpty() {
     Map<String, String> params = new Map();
     return params;
@@ -74,7 +82,6 @@ class Network {
   static Map<String, String> paramsUpdate(User user) {
     Map<String, String> params = new Map();
     params.addAll({
-      'id': user.id.toString(),
       'name': user.name,
       'salary': user.salary,
       'age': user.age,
@@ -82,10 +89,20 @@ class Network {
     return params;
   }
 
-  static Map<String, String> paramsDelete() {
-    Map<String, String> params = new Map();
-    return params;
+  /* Http Parsing */
+
+  /* Http Parsing */
+
+  static EmpList parseEmpList(String body){
+    dynamic json = jsonDecode(body);
+    var data = EmpList.fromJson(json);
+    return data;
   }
 
+  static EmpOne parseEmpOne(String body){
+    dynamic json = jsonDecode(body);
+    var data = EmpOne.fromJson(json);
+    return data;
+  }
 
 }
